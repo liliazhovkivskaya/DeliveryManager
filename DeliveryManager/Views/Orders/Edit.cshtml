@@ -1,0 +1,61 @@
+﻿@model DeliveryManager.Models.Entity.Order
+
+<h2>Редактировать заказ</h2>
+
+<form id="editOrderForm" asp-action="Edit" method="post" onsubmit="return validateEditForm()">
+    <input type="hidden" asp-for="OrderId" />
+
+    <div class="form-group">
+        <label for="Weight">Вес (кг):</label>
+        <input type="text" class="form-control" asp-for="Weight" id="Weight" required oninput="replaceDotWithComma()" />
+    </div>
+
+    <div class="form-group">
+        <label for="CityDistrict">Район:</label>
+        <input type="text" class="form-control" asp-for="CityDistrict" id="CityDistrict" required />
+    </div>
+
+    <div class="form-group">
+        <label for="DeliveryTime">Время доставки:</label>
+        <input type="datetime-local" class="form-control" asp-for="DeliveryTime" id="DeliveryTime" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>
+
+<script>
+    // Функция для замены точки на запятую
+    function replaceDotWithComma() {
+        const weightField = document.getElementById("Weight");
+        weightField.value = weightField.value.replace(".", ",");
+    }
+
+    // Функция для проверки данных перед отправкой формы
+    function validateEditForm() {
+        replaceDotWithComma(); // Замена точки на запятую перед валидацией
+
+        const weight = document.getElementById("Weight").value;
+        const weightRegex = /^[0-9]+(,)?[0-9]*$/;
+
+        if (!weightRegex.test(weight) || parseFloat(weight.replace(",", ".")) < 0.1 || parseFloat(weight.replace(",", ".")) > 1000) {
+            alert("Вес должен быть числом в диапазоне от 0.1 до 1000 кг. Допускается использование запятой для дробной части.");
+            return false;
+        }
+
+        const cityDistrict = document.getElementById("CityDistrict").value;
+        if (cityDistrict.length > 100) {
+            alert("Название района не должно превышать 100 символов.");
+            return false;
+        }
+
+        const deliveryTime = document.getElementById("DeliveryTime").value;
+        if (!deliveryTime) {
+            alert("Пожалуйста, укажите корректное время доставки.");
+            return false;
+        }
+
+        // Все проверки пройдены, форма отправляется
+        return true;
+    }
+</script>
